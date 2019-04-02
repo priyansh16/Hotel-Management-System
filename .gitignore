@@ -1,32 +1,196 @@
-# Prerequisites
-*.d
+#include <conio.h>
+#include <cstdlib>
+#include<iostream>
+using namespace std;
+	/* variable definition goes here */
+int status, roomNumber, choice, count, ii;
+void CheckIn()
+{		
+    cout<<"\n\t\t\tEnter the room number to be checked-in: ";
+	cin>>roomNumber;
+	/* check if the room number is valid */
+	if (roomNumber <= 0 || roomNumber > 32)
+	{
+		cout<<"\n\t\tInvalid room number. " \
+				<<"Room number must be in between 1-32...";
+		return;/* quit the case */
+	}
+	/* check if the room is already occupied */
+	if (status & (1 << (roomNumber - 1)))
+	{
+		cout<<"\n\t\t\t   Room number:" <<roomNumber<<" already Occupied...";
+		return ; /* quit the case */
+	}
+	/* update the room status to occupied */
+	status |= (1 << (roomNumber - 1));
+	cout<<"\n\t\tStatus of room number: "<<roomNumber \
+			<<" updated to OCCUPIED successfully...";
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+    
+}
+void CheckOut()
+{
+    cout<<"\n\t\t\tEnter the room number to be checked-Out: ";
+	cin>>roomNumber;
+	/* check if the room number is valid */
+	if (roomNumber <= 0 || roomNumber > 32)
+	{
+	cout<<"\n\t\tInvalid room number. " \
+		<<" Room number must be in between 1-32...";
+	return; /* quit the case */
+	}
+	/* check if the room is already occupied */
+	if ((status >> (roomNumber - 1) & 1) == 0)
+	{
+	cout<<"\n\t\t\t   Room number: "<<roomNumber<<" already Unoccupied...";
+	return; /* quit the case */
+	}
+	/* update the room status to unoccupied */
+	status &= ~(1 << (roomNumber - 1));
+	cout<<"\n\t\tStatus of room number: "<<roomNumber \
+		<<" updated to UNOCCUPIED successfully...";
+}
+void checkStatus()
+{
+    cout<<"\n\t\t\tEnter the room number to be verified: ";
+	cin>>roomNumber;
+	/* check if the room number is valid */
+	if (roomNumber <= 0 || roomNumber > 32)
+	{
+	    cout<<"\n\t\tInvalid room number. " \
+			<<"Room number must be in between 1-32...";
+    return; /* quit the case */
+	}
+	/* check if the room is occupied */
+	if (status & (1 << (roomNumber - 1)))
+	    cout<<"\n\t\t\t\tRoom number: "<<roomNumber<<" is Occupied...";
+	else
+		cout<<"\n\t\t\t\tRoom number: "<<roomNumber<<" is Unoccupied...";
+    
+}
+void occupiedRoom()
+{
+    cout<<"\n\t\t\tOccupied rooms: ";
+	for (count = 0, ii = 0; ii < 32; ++ii)
+	{
+		if (status & (1 << ii))
+		{
+			cout<<ii+1;
+			if (++count % 16 == 0)
+			{
+				cout<<"\n\t\t\t\t\t";
+				count = 0;
+			}
+		}
+	}
+}
+void unoccupiedRoom()
+{
+    cout<<"\n\t\t\tUnoccupied rooms: ";
+	for (ii = 0; ii < 32; ++ii)
+	{
+		if ((status & (1 << ii)) == 0)
+		{
+			cout<<ii+1;
+			if (++count % 16 == 0)
+			{
+				cout<<"\n\t\t\t\t\t";
+				count = 0;
+			}
+		}
+	}
+}
+void display()
+{
+    cout<<"\n  ";
+	for (count = 0, ii = 0; ii < 32; ++ii)
+	{
+		if (status & (1 << ii))
+			cout<<ii+1<<" is occupied.  ";
+		else
+		cout<<ii+1<<" is Unoccupied. ";
+		/* move on to the next line if necessary */
+		if (++count % 5 == 0)
+		{
+			cout<<"\n  ";
+			count = 0;
+		}
+	}
 
-# Precompiled Headers
-*.gch
-*.pch
+}
+void menu()
+{
+    cout<<"\n\n\t\t\tYou have the options below: ";
+	cout<<"\n\n\t\t\t\t1. Update Check-In";
+	cout<<"\n\t\t\t\t2. Update Check-Out";
+	cout<<"\n\t\t\t\t3. Check Status";
+	cout<<"\n\t\t\t\t4. Display Occupied Rooms";
+	cout<<"\n\t\t\t\t5. Display Unoccupied Rooms";
+	cout<<"\n\t\t\t\t6. Update House Full";
+	cout<<"\n\t\t\t\t7. Display Day-End Report";
+	cout<<"\n\t\t\t\t9. Quit";
+}
+int main()
+{
+	/* initialize the status of the rooms */
+	status &= 0;
+	/* below are the other ways to initialize the status to 0 
+	status ^= 0;
+	status &= ~status;
+	*/
+	
+	do
+	{
+		/* clear the user screen */
+		clrscr();
+		
+		/* display the menu of options */
+		menu();
+		/* prompt for the choice and read it */
+		cout<<"\n\n\t\t\t\tEnter your choice: ";
+		cin>>choice;
+		/* do the needful */
+		switch (choice)
+		{
+			case 1: /* Update Check-In */
+			        CheckIn();
+			        break;
+			case 2: /* Update Check-Out */
+					CheckOut();
+					break; /* quit the case */
+			case 3: /* Check Status */
+					checkStatus();
+					break; /* quit the case */
+			case 4: /* Display Occupied Rooms */
+					occupiedRoom();
+					break; /* quit the case */
+			case 5: /* Display Unoccupied Rooms */
+					unoccupiedRoom();
+					break; /* quit the case */
+						
+			case 6: /* Update House Full */
+					status = ~0;
+					cout<<"\n\t\t\tUpdated the status: No Rooms Available...";
+					/* below are the other ways to update all bits to 1
+					status ^= ~status;
+					~(status & 0);
+					*/
+					break; /* quit the case */
+					
+			case 7: /* Display Day-End Report */
+					display();
+					break; /* quit the case */
+			case 9: /* Quit */
+					return 0;
+			default:/* invalid option */
+					cout<<"\n\t\t\tInvalid option, try again...";
+		} /* end of switch */
+		
+		/* wait for the user to press any key before next iteration */
+		getch ();
+		
+	} while (1);
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+	/* we are done!!! */
+	return 0;
+}
